@@ -1,52 +1,164 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Select, MenuItem
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    MenuItem,
+    TablePagination,
+    Chip,
+    FormControl,
+    Select,
+    OutlinedInput
 } from '@mui/material';
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { useAppSelector } from "../../../hooks/useAppSelector";
+import { getRoles, getUsers, addRole, removeRole } from "../adminSlice";
+import Box from "@mui/material/Box";
+import { Theme, useTheme } from '@mui/material/styles';
 
-const mockUsers = [
-    { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user' },
-    { id: 2, name: 'Bob', email: 'bob@example.com', role: 'admin' },
-];
+const roleData = {
+    ADMIN: { label: 'Администратор', color: 'error' },
+    STUDENT: { label: 'Студент', color: 'primary' },
+    EMPLOYEE: { label: 'Сотрудник', color: 'success' },
+    TUTOR: { label: 'Преподаватель', color: 'warning' },
+    REGISTERED: { label: 'Зарегистрированный', color: 'default' },
+};
 
 const UsersTable = () => {
-    const [users, setUsers] = useState(mockUsers);
+    const dispatch = useAppDispatch();
+    const users = useAppSelector((state) => state.admin.users) || [];
+    const allRoles = useAppSelector((state) => state.admin.roles) || [];
+    const status = useAppSelector((state) => state.admin.status);
 
-    const handleRoleChange = (id: number, newRole: string) => {
-        const updatedUsers = users.map(user =>
-            user.id === id ? { ...user, role: newRole } : user
-        );
-        setUsers(updatedUsers);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    useEffect(() => {
+        if (status === 'idle') {
+            dispatch(getUsers());
+            dispatch(getRoles());
+        }
+    }, [dispatch, status]);
+
+
+    const handleRoleSelect = async (email: string, role: string) => {
+        console.log('Selected role:', role);
+        try {
+            await dispatch(addRole({ email, role }));
+        } catch (error) {
+            console.error('Error adding role:', error);
+        }
     };
 
+    const handleRoleRemove = async (email: string, role: string) => {
+        try {
+            //TODO добавить подтверждение при удаление роли администратора у самого себя
+            await dispatch(removeRole({ email, role }));
+        } catch (error) {
+            console.error('Error removing role:', error);
+        }
+    };
+
+    const handleChangePage = (event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
+    const getStyles = (role: string, selectedRoles: string[], theme: Theme) => {
+        return {
+            fontWeight: selectedRoles.indexOf(role) === -1
+                ? theme.typography.fontWeightRegular
+                : theme.typography.fontWeightMedium,
+        };
+    };
+
+    const theme = useTheme();
+
     return (
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Email</TableCell>
-                        <TableCell>Role</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {users.map(user => (
-                        <TableRow key={user.id}>
-                            <TableCell>{user.name}</TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>
-                                <Select
-                                    value={user.role}
-                                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                >
-                                    <MenuItem value="user">User</MenuItem>
-                                    <MenuItem value="admin">Admin</MenuItem>
-                                </Select>
-                            </TableCell>
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer sx={{ maxHeight: 800 }}>
+                <Table stickyHeader>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Почта</TableCell>
+                            <TableCell>Роль</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                        {users.length > 0 || status != "loading" ? (
+                            users
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((user) => (
+                                    <TableRow hover key={user.email}>
+                                        <TableCell>{user.email}</TableCell>
+                                        <TableCell>
+                                            <FormControl sx={{ m: 1, width: '100%' }}>
+                                                <Select
+                                                    labelId="roles-chip-label"
+                                                    id="roles-multiple-chip"
+                                                    multiple
+                                                    value={Array.from(new Set(user.roles || []))}
+                                                    input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                                                    renderValue={(selected) => (
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                            {selected.map((value) => (
+                                                                <Chip
+                                                                    variant="outlined"
+                                                                    key={value}
+                                                                    label={roleData[value]?.label || value}
+                                                                    onDelete={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleRoleRemove(user.email, value);
+                                                                    }}
+                                                                    onMouseDown={(e) => e.stopPropagation()}
+                                                                    color={roleData[value]?.color}
+                                                                />
+                                                            ))}
+                                                        </Box>
+                                                    )}
+                                                >
+                                                    {allRoles.map((role) => (
+                                                        <MenuItem
+                                                            key={role}
+                                                            value={role}
+                                                            style={getStyles(role, user.role || [], theme)}
+                                                            onClick={(e) => handleRoleSelect(user.email, role)}
+                                                        >
+                                                            {roleData[role]?.label || role}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={2}>К сожалению, пользователи не найдены.</TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={users.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage="Записей на странице"
+            />
+        </Paper>
     );
 };
 

@@ -25,20 +25,15 @@ export default function AuthPage() {
                 minHeight="100vh"
                 alignItems="center"
                 justifyContent="center"
-                sx={{
-                    background: theme =>
-                        theme.palette.mode === 'dark'
-                            ? 'linear-gradient(to right, #141e30, #243b55)'
-                            : 'linear-gradient(to right, #e0eafc, #cfdef3)',
-                }}
             >
+                {/* Оформление вынесено сюда */}
                 <Paper elevation={3} sx={{ width: 400, p: 4 }}>
                     <Typography variant="h4" textAlign="center" mb={2}>
-                        Welcome
+                        Добро пожаловать
                     </Typography>
                     <Tabs value={tabIndex} onChange={handleTabChange} centered>
-                        <Tab label="Login" />
-                        <Tab label="Register" />
+                        <Tab label="Вход" />
+                        <Tab label="Регистрация" />
                     </Tabs>
                     <Box mt={3}>
                         {tabIndex === 0 ? <LoginForm /> : <RegisterForm />}

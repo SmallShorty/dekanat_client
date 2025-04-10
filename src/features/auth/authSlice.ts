@@ -4,7 +4,7 @@ import { IUser } from '../../types/user';
 
 interface LoginResponse {
     user: IUser;
-    token: string; // Это JSESSIONID, который сервер возвращает в теле ответа
+    token: string;
 }
 
 interface AuthState {
@@ -15,10 +15,39 @@ interface AuthState {
 }
 
 export const login = createAsyncThunk<LoginResponse, { email: string; password: string }>(
-    'login',
+    'auth/login',
     async (userData, { rejectWithValue }) => {
         try {
-            const response = await api.post('/login', userData, {
+            const response = await api.post('auth/login', userData, {
+                withCredentials: true,
+            });
+
+            const meResponse = await api.get('auth/me', {
+                withCredentials: true,
+            });
+
+            const roles = meResponse.data.map((role: { authority: string }) => role.authority) || [];
+
+            const userWithroles: IUser = {
+                ...response.data.user,
+                roles,
+            };
+
+            return {
+                token: response.data.token,
+                user: userWithroles,
+            };
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    }
+);
+
+export const register = createAsyncThunk<LoginResponse, { email: string; password: string }>(
+    'auth/register',
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await api.post('auth/register', userData, {
                 withCredentials: true,
             });
             return response.data;
@@ -28,14 +57,11 @@ export const login = createAsyncThunk<LoginResponse, { email: string; password: 
     }
 );
 
-export const register = createAsyncThunk<LoginResponse, { email: string; password: string }>(
-    'register',
-    async (userData, { rejectWithValue }) => {
+export const logoutApi = createAsyncThunk(
+    'auth/logout',
+    async (_, { rejectWithValue }) => {
         try {
-            const response = await api.post('/auth/register', userData, {
-                withCredentials: true,
-            });
-            return response.data;
+            await api.post('auth/logout', {}, { withCredentials: true });
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -56,7 +82,6 @@ const authSlice = createSlice({
         logout: (state) => {
             state.user = null;
             state.token = null;
-
             localStorage.removeItem('token');
         },
     },
@@ -88,6 +113,17 @@ const authSlice = createSlice({
             .addCase(register.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = (action.payload as string) || 'Registration failed';
+            });
+
+        builder
+            .addCase(logoutApi.fulfilled, (state) => {
+                state.status = 'idle';
+                state.user = null;
+                state.token = null;
+                localStorage.removeItem('token');
+            })
+            .addCase(logoutApi.rejected, (state, action) => {
+                console.error('Logout failed:', action.payload);
             });
     },
 });

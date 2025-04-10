@@ -1,11 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import rootReducer from './rootReducer';
+import rootReducer from "./rootReducer.ts";
 
-// Создаем store, используя rootReducer
-const store = configureStore({
+export const store = configureStore({
     reducer: rootReducer,
-    //middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(customMiddleware),
 });
 
 export type AppDispatch = typeof store.dispatch;
-export default store;

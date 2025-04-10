@@ -1,5 +1,4 @@
 import {
-    Box,
     Button,
     TextField,
     FormControl,
@@ -7,30 +6,32 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { login } from '../authSlice.ts';
-import {useAppDispatch} from "../../../hooks/useAppDispatch.ts"; // Импортируем login thunk
+import {useAppDispatch} from "../../../hooks/useAppDispatch.ts";
+import {useNavigate} from "react-router-dom"; // Импортируем login thunk
 
 export default function LoginForm() {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(login({ email, password }));
+
+
+        const resultAction = await dispatch(login({email, password}));
+
+        console.log('resultAction', resultAction);
+
+        if (resultAction.meta.requestStatus === 'fulfilled') {
+            navigate('/');
+        }
     };
 
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit}
-            display="flex"
-            flexDirection="column"
-            gap={2}
-            sx={{ width: 300 }}
-        >
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <FormControl>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Почта</FormLabel>
                 <TextField
                     name="email"
                     required
@@ -41,7 +42,7 @@ export default function LoginForm() {
                 />
             </FormControl>
             <FormControl>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Пароль</FormLabel>
                 <TextField
                     name="password"
                     required
@@ -51,9 +52,9 @@ export default function LoginForm() {
                     fullWidth
                 />
             </FormControl>
-                <Button variant="contained" type="submit" sx={{ marginTop: 2 }}>
-                    Login
-                </Button>
-        </Box>
+            <Button variant="contained" type="submit" sx={{ marginTop: 2, padding: 2 }}>
+                Войти
+            </Button>
+        </form>
     );
 }
