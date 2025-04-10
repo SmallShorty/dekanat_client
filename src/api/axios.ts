@@ -3,7 +3,7 @@ import store from "../app/store.ts";
 
 // Создание экземпляра axios с базовым URL и заголовками
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: 'http://localhost:8080/api/v1/auth/',
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
@@ -14,10 +14,6 @@ const api = axios.create({
 // Перехватчик для добавления JSESSIONID в заголовки запроса
 api.interceptors.request.use(
     (config) => {
-        const token = store.getState().auth.token; // Извлекаем JSESSIONID из Redux
-        if (token) {
-            config.headers['JSESSIONID'] = token; // Добавляем JSESSIONID в заголовки
-        }
         return config;
     },
     (error) => {

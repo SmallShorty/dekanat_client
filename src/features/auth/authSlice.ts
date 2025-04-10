@@ -15,10 +15,10 @@ interface AuthState {
 }
 
 export const login = createAsyncThunk<LoginResponse, { email: string; password: string }>(
-    'auth/login',
+    'login',
     async (userData, { rejectWithValue }) => {
         try {
-            const response = await api.post('/auth/login', userData, {
+            const response = await api.post('/login', userData, {
                 withCredentials: true,
             });
             return response.data;
@@ -29,7 +29,7 @@ export const login = createAsyncThunk<LoginResponse, { email: string; password: 
 );
 
 export const register = createAsyncThunk<LoginResponse, { email: string; password: string }>(
-    'auth/register',
+    'register',
     async (userData, { rejectWithValue }) => {
         try {
             const response = await api.post('/auth/register', userData, {
