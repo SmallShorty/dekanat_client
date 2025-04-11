@@ -124,6 +124,7 @@ const UsersTable = () => {
                                                             ))}
                                                         </Box>
                                                     )}
+                                                    sx={{ '& legend': { display: 'none' }, '& fieldset': { top: 0 },}}
                                                 >
                                                     {allRoles.map((role) => (
                                                         <MenuItem
