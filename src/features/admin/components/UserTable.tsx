@@ -130,7 +130,7 @@ const UsersTable = () => {
                                                         <MenuItem
                                                             key={role}
                                                             value={role}
-                                                            style={getStyles(role, user.role || [], theme)}
+                                                            style={getStyles(role, user.roles || [], theme)}
                                                             onClick={(e) => handleRoleSelect(user.email, role)}
                                                         >
                                                             {roleData[role]?.label || role}
