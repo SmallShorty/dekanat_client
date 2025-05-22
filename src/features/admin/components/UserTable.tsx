@@ -124,12 +124,13 @@ const UsersTable = () => {
                                                             ))}
                                                         </Box>
                                                     )}
+                                                    sx={{ '& legend': { display: 'none' }, '& fieldset': { top: 0 },}}
                                                 >
                                                     {allRoles.map((role) => (
                                                         <MenuItem
                                                             key={role}
                                                             value={role}
-                                                            style={getStyles(role, user.role || [], theme)}
+                                                            style={getStyles(role, user.roles || [], theme)}
                                                             onClick={(e) => handleRoleSelect(user.email, role)}
                                                         >
                                                             {roleData[role]?.label || role}

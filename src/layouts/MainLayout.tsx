@@ -1,9 +1,47 @@
 import { Outlet } from "react-router-dom";
 import { Box, Container, useTheme } from "@mui/material";
 import ButtonAppBar from "../components/common/ButtonAppBar.tsx";
+import Sidebar from "../components/common/Sidebar.tsx";
 
 const MainLayout = () => {
     const theme = useTheme();
+
+    const items = [
+        { label: 'Главная', href: '/', roles: ['STUDENT', 'TEACHER', 'ADMIN'] },
+        {
+            label: 'Студенты',
+            roles: ['ADMIN', 'TEACHER'],
+            subItems: [
+                { label: 'Список студентов', href: '/students', roles: ['ADMIN'] },
+            ],
+        },
+        {
+            label: 'Преподаватели',
+            roles: ['ADMIN'],
+            subItems: [
+                { label: 'Список преподавателей', href: '/teachers', roles: ['ADMIN'] },
+            ],
+        },
+        {
+            label: 'Институты',
+            roles: ['ADMIN'],
+            subItems: [
+                { label: 'Информация', href: '/institutes', roles: ['ADMIN'] },
+                { label: 'Список', href: '/institutes/create', roles: ['ADMIN'] },
+            ],
+        },
+        {
+            label: 'Учебный процесс',
+            roles: ['STUDENT', 'TEACHER'],
+            subItems: [
+                { label: 'Расписание', href: '/schedule' },
+                { label: 'Успеваемость', href: '/grades', roles: ['STUDENT'] },
+            ],
+        },
+    ];
+
+
+
 
     return (
         <Box
@@ -16,7 +54,7 @@ const MainLayout = () => {
                     : 'linear-gradient(to right, #e0eafc, #cfdef3)',
             }}
         >
-            <ButtonAppBar />
+            <Sidebar items={items} />
             <Container sx={{ mt: 4, flexGrow: 1 }}>
                 <Outlet />
             </Container>
