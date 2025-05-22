@@ -67,13 +67,17 @@ function App() {
                     <Route
                         path="/students/create"
                         element={
+                            <ProtectedRoute>
                                 <StudentFormPage />
+                                </ProtectedRoute>
                         }
                     />
                     <Route
                         path="/students/:id"
                         element={
+                            <ProtectedRoute>
                                 <StudentFormPage />
+                                </ProtectedRoute>
                         }
                     />
                     
@@ -86,7 +90,9 @@ function App() {
                     <Route
                         path="/kafedras/create"
                         element={
+                            <ProtectedRoute>
                                 <KafedraFormPage />
+                                </ProtectedRoute>
                         }
                     />
                     <Route

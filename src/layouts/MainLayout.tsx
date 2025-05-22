@@ -14,13 +14,13 @@ const MainLayout = () => {
                 { label: 'Список студентов', href: '/students', roles: ['ADMIN'] },
             ],
         },
-        {
-            label: 'Преподаватели',
-            roles: ['ADMIN'],
-            subItems: [
-                { label: 'Список преподавателей', href: '/teachers', roles: ['ADMIN'] },
-            ],
-        },
+        // {
+        //     label: 'Преподаватели',
+        //     roles: ['ADMIN'],
+        //     subItems: [
+        //         { label: 'Список преподавателей', href: '/teachers', roles: ['ADMIN'] },
+        //     ],
+        // },
         {
             label: 'Институты',
             roles: ['ADMIN'],
