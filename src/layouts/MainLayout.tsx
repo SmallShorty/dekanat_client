@@ -27,7 +27,7 @@ const MainLayout = () => {
             roles: ['ADMIN'],
             subItems: [
                 { label: 'Информация', href: '/institutes', roles: ['ADMIN'] },
-                { label: 'Список', href: '/institutes/create', roles: ['ADMIN'] },
+                { label: 'Список', href: '/institutes/panel', roles: ['ADMIN'] },
             ],
         },
         {
