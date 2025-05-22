@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { Box, Container, useTheme } from "@mui/material";
-import ButtonAppBar from "../components/common/ButtonAppBar.tsx";
 import Sidebar from "../components/common/Sidebar.tsx";
 
 const MainLayout = () => {
@@ -31,13 +30,20 @@ const MainLayout = () => {
             ],
         },
         {
-            label: 'Учебный процесс',
-            roles: ['STUDENT', 'TEACHER'],
+            label: 'Кафедры',
+            roles: ['ADMIN', 'EMPLOYEE'],
             subItems: [
-                { label: 'Расписание', href: '/schedule' },
-                { label: 'Успеваемость', href: '/grades', roles: ['STUDENT'] },
+                { label: 'Список кафедр', href: '/kafedras', roles: ['ADMIN', 'EMPLOYEE'] },
             ],
         },
+        // {
+        //     label: 'Учебный процесс',
+        //     roles: ['STUDENT', 'TEACHER'],
+        //     subItems: [
+        //         { label: 'Расписание', href: '/schedule' },
+        //         { label: 'Успеваемость', href: '/grades', roles: ['STUDENT'] },
+        //     ],
+        // },
     ];
 
 
