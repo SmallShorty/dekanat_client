@@ -8,6 +8,7 @@ import StudentListPage from "./features/students/pages/StudentListPage.tsx";
 import StudentFormPage from "./features/students/pages/StudentFormPage.tsx";
 import InstituteListPage from "./features/institutes/pages/InstituteListPage.tsx";
 import InstituteAdminPage from "./features/institutes/pages/InstituteAdminPage.tsx";
+import InstituteFormPage from "./features/institutes/pages/InstituteFormPage.tsx";
 
 const AuthPage = lazy(() => import("../src/features/auth/pages/AuthPage.tsx"));
 const AdminPage = lazy(() => import("../src/features/admin/pages/AdminPage.tsx"));
@@ -34,11 +35,25 @@ function App() {
                         }
                     />
                     <Route
-                        path="/institutes/create"
+                        path="/institutes/panel"
                         element={
                             <ProtectedRoute>
                                 <InstituteAdminPage />
                             </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/institutes/create"
+                        element={
+                            <ProtectedRoute>
+                                <InstituteFormPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/institutes/:id"
+                        element={
+                                <InstituteFormPage />
                         }
                     />
                     <Route
