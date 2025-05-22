@@ -25,7 +25,7 @@ const InstituteAdminPage: React.FC = () => {
           color="primary"
           onClick={handleAddInstitute}
         >
-          Добавить студента
+          Добавить институт
         </Button>
       </Box>
       <InstituteTable />
